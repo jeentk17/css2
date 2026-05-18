@@ -1,0 +1,9 @@
+Metric,Mean,Min,Max
+Total UI elements,21.42,1,84
+Text elements,9.6,0,41
+Icon/Image elements,6.01,0,31
+Clickable elements,6.81,0,39
+Unlabeled elements,13.01,1,54
+Clickable unlabeled elements,4.86,0,35
+Maximum tree depth,3.16,1,5
+Root direct children,9.06,0,50

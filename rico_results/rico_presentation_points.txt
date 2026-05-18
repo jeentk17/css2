@@ -1,0 +1,4 @@
+- Higher UI complexity increases cognitive load because users must process more elements at once.
+- Dense interfaces make navigation harder by reducing visual clarity and scanability.
+- A high proportion of unlabeled elements suggests many UI components are not accessible to assistive technologies.
+- A high proportion of clickable unlabeled elements suggests users may struggle to understand important actions.

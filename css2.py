@@ -288,15 +288,69 @@ print("- A high proportion of clickable unlabeled elements suggests users may st
 # =====================================
 # STEP 10: SAVE RESULTS
 # =====================================
-summary_output = r"C:\Users\Jeen\Desktop\summary.csv"
-extremes_output = r"C:\Users\Jeen\Desktop\extremes.csv"
-full_output = r"C:\Users\Jeen\Desktop\sampled_ui_metrics.csv"
+output_folder = r"C:\Users\Jeen\Desktop\css2_allfile\rico_results"
+os.makedirs(output_folder, exist_ok=True)
+
+summary_output = os.path.join(output_folder, "rico_summary.csv")
+extremes_output = os.path.join(output_folder, "rico_least_most_complex.csv")
+full_output = os.path.join(output_folder, "rico_sampled_ui_metrics.csv")
+accessibility_output = os.path.join(output_folder, "rico_accessibility_metrics.csv")
+points_output = os.path.join(output_folder, "rico_presentation_points.txt")
+txt_output = os.path.join(output_folder, "rico_full_results.txt")
 
 summary.to_csv(summary_output, index=False)
 extremes.to_csv(extremes_output, index=False)
 df.to_csv(full_output, index=False)
 
-print("\nSaved files:")
-print(summary_output)
-print(extremes_output)
-print(full_output)
+accessibility_metrics = pd.DataFrame({
+    "Metric": [
+        "Average unlabeled elements per screen",
+        "Average clickable unlabeled elements per screen",
+        "Avg unlabeled %",
+        "Avg clickable unlabeled %"
+    ],
+    "Value": [
+        round(avg_unlabeled, 2),
+        round(avg_clickable_unlabeled, 2),
+        f"{unlabeled_pct:.2f}%",
+        f"{clickable_unlabeled_pct:.2f}%"
+    ]
+})
+
+accessibility_metrics.to_csv(accessibility_output, index=False)
+
+presentation_points = [
+    "Higher UI complexity increases cognitive load because users must process more elements at once.",
+    "Dense interfaces make navigation harder by reducing visual clarity and scanability.",
+    "A high proportion of unlabeled elements suggests many UI components are not accessible to assistive technologies.",
+    "A high proportion of clickable unlabeled elements suggests users may struggle to understand important actions."
+]
+
+with open(points_output, "w", encoding="utf-8") as f:
+    for point in presentation_points:
+        f.write("- " + point + "\n")
+
+with open(txt_output, "w", encoding="utf-8") as f:
+    f.write("=== RICO SUMMARY TABLE ===\n")
+    f.write(summary.to_string(index=False))
+    f.write("\n\n=== LEAST / MOST COMPLEX SCREENS ===\n")
+    f.write(extremes.to_string(index=False))
+    f.write("\n\n=== ACCESSIBILITY METRICS ===\n")
+    f.write(f"Average unlabeled elements per screen: {avg_unlabeled:.2f}\n")
+    f.write(f"Average clickable unlabeled elements per screen: {avg_clickable_unlabeled:.2f}\n")
+    f.write(f"Avg unlabeled %: {unlabeled_pct:.2f}%\n")
+    f.write(f"Avg clickable unlabeled %: {clickable_unlabeled_pct:.2f}%\n")
+    f.write("\n=== PRESENTATION-READY POINTS ===\n")
+    for point in presentation_points:
+        f.write("- " + point + "\n")
+
+print("\nSaved files to:")
+print(output_folder)
+
+print("\nFiles created:")
+print("- rico_summary.csv")
+print("- rico_least_most_complex.csv")
+print("- rico_sampled_ui_metrics.csv")
+print("- rico_accessibility_metrics.csv")
+print("- rico_presentation_points.txt")
+print("- rico_full_results.txt")
