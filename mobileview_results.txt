@@ -1,0 +1,12 @@
+
+===== MOBILEVIEWS RESULTS =====
+Total JSON found: 122301
+Sample size: 100
+
+Avg total elements: 99.86
+Avg clickable: 17.63
+Avg unlabeled: 71.42
+Avg clickable unlabeled: 8.55
+
+Unlabeled %: 71.52%
+Clickable unlabeled %: 48.50%

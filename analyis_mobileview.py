@@ -1,10 +1,14 @@
 import json
 import os
 import random
+import csv
 from statistics import mean
 
 DATASET_FOLDER = r"C:\Users\Jeen\Desktop\mobileview"
+OUTPUT_FOLDER = r"C:\Users\Jeen\Desktop\css2_allfile"
 SAMPLE_SIZE = 100
+
+random.seed(42)
 
 
 def find_json_files(folder):
@@ -18,12 +22,14 @@ def find_json_files(folder):
 
 def has_label(node):
     text = node.get("text")
-    desc = node.get("content_description")  # NOTE: different name
+    desc = node.get("content_description")
 
     return bool((text not in [None, ""]) or (desc not in [None, ""]))
 
 
 def main():
+    os.makedirs(OUTPUT_FOLDER, exist_ok=True)
+
     print("Finding JSON files...")
     files = find_json_files(DATASET_FOLDER)
     print(f"Total JSON found: {len(files)}")
@@ -71,14 +77,49 @@ def main():
         if i % 10 == 0:
             print(f"Processed {i}/{len(sample)}")
 
-    print("\n===== RESULTS =====")
-    print(f"Avg total elements: {mean(totals):.2f}")
-    print(f"Avg clickable: {mean(clickable_list):.2f}")
-    print(f"Avg unlabeled: {mean(unlabeled_list):.2f}")
-    print(f"Avg clickable unlabeled: {mean(clickable_unlabeled_list):.2f}")
+    avg_total = mean(totals)
+    avg_clickable = mean(clickable_list)
+    avg_unlabeled = mean(unlabeled_list)
+    avg_clickable_unlabeled = mean(clickable_unlabeled_list)
 
-    print(f"\nUnlabeled %: {(mean(unlabeled_list)/mean(totals))*100:.2f}%")
-    print(f"Clickable unlabeled %: {(mean(clickable_unlabeled_list)/mean(clickable_list))*100:.2f}%")
+    unlabeled_percent = (avg_unlabeled / avg_total) * 100
+    clickable_unlabeled_percent = (avg_clickable_unlabeled / avg_clickable) * 100
+
+    result_text = f"""
+===== MOBILEVIEWS RESULTS =====
+Total JSON found: {len(files)}
+Sample size: {len(sample)}
+
+Avg total elements: {avg_total:.2f}
+Avg clickable: {avg_clickable:.2f}
+Avg unlabeled: {avg_unlabeled:.2f}
+Avg clickable unlabeled: {avg_clickable_unlabeled:.2f}
+
+Unlabeled %: {unlabeled_percent:.2f}%
+Clickable unlabeled %: {clickable_unlabeled_percent:.2f}%
+"""
+
+    print(result_text)
+
+    txt_path = os.path.join(OUTPUT_FOLDER, "mobileview_results.txt")
+    with open(txt_path, "w", encoding="utf-8") as f:
+        f.write(result_text)
+
+    csv_path = os.path.join(OUTPUT_FOLDER, "mobileview_results.csv")
+    with open(csv_path, "w", newline="", encoding="utf-8") as f:
+        writer = csv.writer(f)
+        writer.writerow(["Metric", "Value"])
+        writer.writerow(["Total JSON found", len(files)])
+        writer.writerow(["Sample size", len(sample)])
+        writer.writerow(["Avg total elements", f"{avg_total:.2f}"])
+        writer.writerow(["Avg clickable", f"{avg_clickable:.2f}"])
+        writer.writerow(["Avg unlabeled", f"{avg_unlabeled:.2f}"])
+        writer.writerow(["Avg clickable unlabeled", f"{avg_clickable_unlabeled:.2f}"])
+        writer.writerow(["Unlabeled %", f"{unlabeled_percent:.2f}%"])
+        writer.writerow(["Clickable unlabeled %", f"{clickable_unlabeled_percent:.2f}%"])
+
+    print(f"Saved TXT to: {txt_path}")
+    print(f"Saved CSV to: {csv_path}")
 
 
 if __name__ == "__main__":
